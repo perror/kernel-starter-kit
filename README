@@ -1,0 +1,206 @@
+			 Kernel Development Framework
+			==============================
+
+This framework can set-up and build a full Linux kernel development
+environment. It is intended to be fully automatic (but it may lack a few
+features to achieve this) and provide many useful features such as minimal
+running environment and a full kernel debugger. It should be also able to
+handle cross-compilation on several architectures.
+
+
+Building the Environment
+------------------------
+This should be totally automatic, just type `make` in this directory.
+And `make help` to have the list of all the targets of the Makefile.
+
+The process of installing and building the environment goes through
+the following steps:
+
+1. Download an archive of the linux kernel source (if needed);
+2. Uncompress it and install it;
+3. Start a configuration session (if you need to customize it);
+4. Build the kernel;
+5. Download an archive of busybox (if needed);
+6. Start a configuration session (if you need to customize it);
+7. Build of the busybox project;
+8. Build the default file-system (initramfs);
+9. Put all together in the `vm/` directory.
+10. Provide a 'start.sh' script that will run the kernel.
+
+
+Running the kernel
+------------------
+Go to the `vm/` directory and execute `start.sh`:
+
+```shell
+#> ./start.sh
+```
+
+Quit with Ctrl-D or `exit`.
+
+```
+Usage: start.sh [--debug] [--help]
+
+-d, --debug	Start the kernel for remote debug
+-h, --help	Display this help
+```
+
+You always start the session as the root user, you can switch to a normal user
+account by typing:
+
+```shell
+root@vm:/$ su - user
+```
+
+Then, you will open a normal user session.
+
+
+Building and loading kernel modules
+-----------------------------------
+In `modules/` you can find a `module-sample/` directory that can be used as a
+template to start a new module with the proper `Makefile` and everything you
+need to start writting it. Just copy the whole directory with a different name
+and start your code.
+
+Once you get a `my_module.ko` file after the build, you can copy it into the
+`vm/mnt` directory and start a virtual-machine. While `root`, just type:
+
+```shell
+root@vm:/$ insmod /mnt/my_module.ko
+```
+
+And, the module will be loaded. To see if the module is loaded, type:
+
+```shell
+root@vm:/$ lsmod
+my_module 16384 0 - Live 0xffffffffa0000000 (O)
+```
+
+And, to unload the module, type:
+
+```shell
+root@vm:/$ rmmod my_module
+```
+
+
+Tracing the kernel with a `gdb` remote server
+---------------------------------------------
+Start the kernel with the `--debug` option:
+```shell
+#> ./start.sh -d
+
+```
+
+Note that the `--debug` option on the `start.sh` script triggers the '-s'
+option on `qemu` that makes the virtual-machine listen to the port 1234 and the
+option '-S' that suspend the execution until the next `continue` command.
+
+
+On another console, start `gdb`:
+```shell
+#> gdb -q linux-x.x.x/vmlinuz
+(gdb) break my_module_init
+(gdb) target remote :1234
+(gdb) continue
+...
+```
+
+Improved `gdb` commands for the Linux kernel
+--------------------------------------------
+
+You can get a set of specific `gdb` commands specialized for Linux kernel
+debugging. Once you get a kernel built, you can just type `make gdbinit` in the
+root directory of the kernel-dev environment and run `gdb`.
+
+```
+(gdb) apropos lx
+function lx_clk_core_lookup -- Find struct clk_core by name
+function lx_current -- Return current task
+function lx_module -- Find module by name and return the module variable
+function lx_per_cpu -- Return per-cpu variable
+function lx_rb_first -- Lookup and return a node from an RBTree
+function lx_rb_last -- Lookup and return a node from an RBTree
+function lx_rb_next -- Lookup and return a node from an RBTree
+function lx_rb_prev -- Lookup and return a node from an RBTree
+function lx_task_by_pid -- Find Linux task by PID and return the task_struct variable
+function lx_thread_info -- Calculate Linux thread_info from task variable
+function lx_thread_info_by_pid -- Calculate Linux thread_info from task variable found by pid
+lx-clk-summary -- Print clk tree summary
+lx-cmdline --  Report the Linux Commandline used in the current kernel
+lx-configdump -- Output kernel config to the filename specified as the command
+lx-cpus -- List CPU status arrays
+lx-dmesg -- Print Linux kernel log buffer
+lx-fdtdump -- Output Flattened Device Tree header and dump FDT blob to the filename
+lx-iomem -- Identify the IO memory resource locations defined by the kernel
+lx-ioports -- Identify the IO port resource locations defined by the kernel
+lx-list-check -- Verify a list consistency
+lx-lsmod -- List currently loaded modules
+lx-mounts -- Report the VFS mounts of the current process namespace
+lx-ps -- Dump Linux tasks
+lx-symbols -- (Re-)load symbols of Linux kernel and currently loaded modules
+lx-timerlist -- Print /proc/timer_list
+lx-version --  Report the Linux Version of the current kernel
+```
+
+For example the `lx-symbols` command can be used to load the symbols from modules:
+
+``` gdb
+(gdb) lx-symbols
+loading vmlinux
+scanning for modules in /home/user/linux/build
+loading @0xffffffffa0020000: /home/user/linux/build/net/netfilter/xt_tcpudp.ko
+loading @0xffffffffa0016000: /home/user/linux/build/net/netfilter/xt_pkttype.ko
+loading @0xffffffffa0002000: /home/user/linux/build/net/netfilter/xt_limit.ko
+loading @0xffffffffa00ca000: /home/user/linux/build/net/packet/af_packet.ko
+loading @0xffffffffa003c000: /home/user/linux/build/fs/fuse/fuse.ko
+...
+```
+
+Setting a breakpoint on some not yet loaded module function can, then, be done
+like this:
+
+``` gdb
+(gdb) b btrfs_init_sysfs
+Function "btrfs_init_sysfs" not defined.
+Make breakpoint pending on future shared library load? (y or [n]) y
+Breakpoint 1 (btrfs_init_sysfs) pending.
+```
+
+Then, continue the target:
+
+``` gdb
+(gdb) c
+```
+
+Load the module on the target and watch the symbols being loaded as well as the
+breakpoint hit:
+
+``` gdb
+loading @0xffffffffa0034000: /home/user/linux/build/lib/libcrc32c.ko
+loading @0xffffffffa0050000: /home/user/linux/build/lib/lzo/lzo_compress.ko
+loading @0xffffffffa006e000: /home/user/linux/build/lib/zlib_deflate/zlib_deflate.ko
+loading @0xffffffffa01b1000: /home/user/linux/build/fs/btrfs/btrfs.ko
+
+Breakpoint 1, btrfs_init_sysfs () at /home/user/linux/fs/btrfs/sysfs.c:36
+36              btrfs_kset = kset_create_and_add("btrfs", NULL, fs_kobj);
+```
+
+Using the Python function in `gdb` is done through the following syntax:
+
+``` gdb
+(gdb) p $lx_per_cpu("runqueues").nr_running
+$3 = 1
+(gdb) p $lx_per_cpu("runqueues", 2).nr_running
+$4 = 0
+```
+
+
+Linux Kernel Coding Style in Emacs
+----------------------------------
+On-the-fly: M-x c-set-style Linux
+
+In ~/.emacs file:
+(add-hook 'c-mode-hook '(lambda nil
+	  	       	  (interactive)
+			  (imenu-add-to-menubar "Functions")
+			  (c-set-style "Linux")))

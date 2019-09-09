@@ -1,0 +1,5 @@
+Welcome to this Linux kernel development virtual-machine!
+
+Feel free to try out what you want, everything written
+outside of the /mnt/ directory will disapear after reboot.
+
