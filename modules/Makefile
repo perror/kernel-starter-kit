@@ -4,7 +4,7 @@ DIRS=$(sort $(wildcard */))
 
 all:
 	@for dir in $(DIRS); do \
-	  cd $$dir; make; \
+	  (cd $$dir; make); \
 	done
 
 
@@ -13,7 +13,7 @@ all:
 ##################################################################
 clean:
 	@for dir in $(DIRS); do \
-	  cd $$dir; make clean; \
+	  (cd $$dir; make clean); \
 	done
 
 allclean: clean
