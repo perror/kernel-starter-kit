@@ -17,6 +17,8 @@ obj-m += $(MODULE_NAME).o
 
 all:
 	@mkdir -p $(INSTALL_DIR)
+	@touch $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.builtin
+	@touch $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.order
 	make -C $(LINUX_HEADERS) M=$(PWD) modules
 	make -C $(LINUX_HEADERS) M=$(PWD) INSTALL_MOD_PATH=$(INSTALL_DIR) modules_install
 
@@ -28,3 +30,5 @@ install: all
 clean:
 	make -C $(LINUX_HEADERS) M=$(PWD) clean || true
 	@rm -fr *~ *.ko* *.mod.* *.o modules.order Modules.symvers
+	@rm -f $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.builtin
+	@rm -f $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.order
