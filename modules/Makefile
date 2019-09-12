@@ -7,6 +7,10 @@ all:
 	  (cd $$dir; make); \
 	done
 
+install:
+	@for dir in $(DIRS); do \
+	  (cd $$dir; make install); \
+	done
 
 ##################################################################
 # Clean rules
@@ -26,6 +30,7 @@ distclean: clean
 help:
 	@echo "Makefile usage:"
 	@echo
-	@echo "make <all>            Build all the modules"
-	@echo "make clean            Clean modules sources"
-	@echo "make help             Display this help"
+	@echo "make <all>         Build all the modules"
+	@echo "make install       Install the modules files in vm/mnt"
+	@echo "make clean         Clean modules sources"
+	@echo "make help          Display this help"
