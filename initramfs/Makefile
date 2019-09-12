@@ -8,12 +8,12 @@
 FS_DIR=fs
 BUILD_DIR=build
 INSTALL_DIR=_install
+CONFIG_DIR=../config
 
 # Define functions to check undefined variables
 check_defined = $(if $(value $(strip $1)),,\
 $(error $1 undefined !))
 
-$(call check_defined, CONFIG_DIR)
 $(call check_defined, INITRAMFS_CPIO)
 $(call check_defined, BUSYBOX_ARCH)
 $(call check_defined, BUSYBOX_ARCHIVE)

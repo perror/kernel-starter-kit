@@ -1,10 +1,9 @@
 # Set rootdir
 ROOTDIR=$(abspath $(PWD)/../..)
-CONFIG_DIR=$(ROOTDIR)/config
-INSTALL_DIR=$(ROOTDIR)/initramfs/build
+INSTALL_DIR=$(abspath $(ROOTDIR)/initramfs/build)
 
 # Import specific settings
--include $(CONFIG_DIR)/Makefile.inc
+-include $(ROOTDIR)/config/Makefile.inc
 
 # Set cross-compilation variables
 export ARCH=$(LINUX_ARCH)
@@ -17,14 +16,14 @@ MODULE_NAME=my_module
 obj-m += $(MODULE_NAME).o
 
 all:
-	@mkdir -p $(ROOTDIR)/initramfs/build
+	@mkdir -p $(INSTALL_DIR)
 	make -C $(LINUX_HEADERS) M=$(PWD) modules
 	make -C $(LINUX_HEADERS) M=$(PWD) INSTALL_MOD_PATH=$(INSTALL_DIR) modules_install
 
 install: all
 	@echo "Installing module in vm/mnt/..."
-	@mkdir -p ../../mv/mnt
-	@cp -f  $(MODULE_NAME).ko ../../vm/mnt
+	@mkdir -p $(ROOTDIR)/vm/mnt
+	@cp -f  $(MODULE_NAME).ko $(ROOTDIR)/vm/mnt
 
 clean:
 	make -C $(LINUX_HEADERS) M=$(PWD) clean || true

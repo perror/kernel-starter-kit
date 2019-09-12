@@ -6,11 +6,10 @@
 ##################################################################
 
 # Main directories
-ROOTDIR=$(PWD)
 VM_DIR=vm
 MODULES_DIR=modules
 INITRAMFS_DIR=initramfs
-export CONFIG_DIR=$(PWD)/config
+CONFIG_DIR=config
 
 # Exported variables (needed in initramfs/)
 export INITRAMFS_CPIO=initramfs.cpio.gz
@@ -73,7 +72,7 @@ $(LINUX_DIR)/$(LINUX_SYSTEM_MAP): | $(LINUX_DIR)
 	cd $(LINUX_DIR) && \
 	make ARCH=$(LINUX_ARCH) menuconfig && \
 	make ARCH=$(LINUX_ARCH) -j$(BUILD_JOBS) && \
-	make ARCH=$(LINUX_ARCH) INSTALL_MOD_PATH=$(ROOTDIR)/$(INITRAMFS_DIR)/build modules_install
+	make ARCH=$(LINUX_ARCH) INSTALL_MOD_PATH=$(INITRAMFS_DIR)/build modules_install
 
 $(LINUX_DIR): $(CONFIG_DIR)/$(LINUX_ARCHIVE) $(CONFIG_DIR)/linux-config
 	mkdir -p $(LINUX_DIR)
