@@ -16,7 +16,7 @@ MODULE_NAME=my_module
 obj-m += $(MODULE_NAME).o
 
 all:
-	@mkdir -p $(INSTALL_DIR)
+	@mkdir -p $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)
 	@touch $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.builtin
 	@touch $(INSTALL_DIR)/lib/modules/$(LINUX_VERSION)/modules.order
 	make -C $(LINUX_HEADERS) M=$(PWD) modules

@@ -66,8 +66,8 @@ $(CONFIG_DIR)/$(BUSYBOX_ARCHIVE):
 # Clean rules
 ##################################################################
 clean:
-	make -C $(BUSYBOX_DIR) clean || true
 	@rm -rf $(INITRAMFS_CPIO) $(BUILD_DIR) *~
+	make -C $(BUSYBOX_DIR) clean || true
 
 allclean: clean
 

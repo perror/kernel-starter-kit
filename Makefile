@@ -113,6 +113,11 @@ $(VM_DIR)/$(LINUX_IMG) $(VM_DIR)/$(LINUX_SYSTEM_MAP) $(VM_DIR)/$(INITRAMFS_CPIO)
 ##################################################################
 clean:
 	make -C $(MODULES_DIR) clean
+	make -C $(INITRAMFS_DIR) clean
+	@rm -f $(LINUX_DIR)/arch/$(LINUX_ARCH)/boot/$(LINUX_IMG)
+	@rm -f $(VM_DIR)/$(LINUX_IMG) \
+	       $(VM_DIR)/$(LINUX_SYSTEM_MAP) \
+	       $(VM_DIR)/$(INITRAMFS_CPIO)
 	@rm -f *~
 
 kernel-clean:
