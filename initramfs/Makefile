@@ -25,9 +25,18 @@ BUSYBOX_DIR=busybox-$(BUSYBOX_VERSION)
 
 
 ##################################################################
+# Check for the existence of some utilities
+##################################################################
+ifneq (, $(shell which cpio > /dev/null))
+$(error cpio utility not found in $(PATH), please install it)
+endif
+
+
+##################################################################
 # Default rule
 ##################################################################
 all: $(INITRAMFS_CPIO)
+
 
 $(INITRAMFS_CPIO): | $(BUSYBOX_DIR)/$(INSTALL_DIR)
 	mkdir -p $(BUILD_DIR)
