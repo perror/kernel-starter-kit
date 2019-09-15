@@ -2,7 +2,10 @@
 
 EXIT_CODE=1
 DEBUG_OPTS=
+
+KERNEL_IMG=bzImage
 INITRAMFS=initramfs.cpio.gz
+
 
 # Parsing the options (if any)
 while [ "$1" != "" ]; do
@@ -29,8 +32,8 @@ mkdir -p mnt/
 # Running QEMU
 qemu-system-x86_64 \
     -enable-kvm \
-    -kernel bzImage \
-    -initrd initramfs.cpio.gz \
+    -kernel $KERNEL_IMG \
+    -initrd $INITRAMFS \
     -append 'console=ttyS0 loglevel=3 oops=panic panic=1' \
     -fsdev local,id=exp1,path=mnt,security_model=mapped \
     -device virtio-9p-pci,fsdev=exp1,mount_tag=mountpoint \
