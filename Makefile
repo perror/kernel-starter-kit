@@ -26,6 +26,11 @@ $(call check_defined, LINUX_IMG)
 $(call check_defined, BUILD_JOBS)
 $(call check_defined, BUSYBOX_VERSION)
 
+# Check if cpio program is present
+ifneq (, $(shell which cpio > /dev/null))
+  $(error cpio utility not found, please install it)
+endif
+
 # Automated settings
 LINUX_DIR=linux-$(LINUX_VERSION)
 LINUX_ARCHIVE=linux-$(LINUX_VERSION).tar.xz
