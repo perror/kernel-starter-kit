@@ -47,7 +47,7 @@ $(INITRAMFS_CPIO): | $(BUSYBOX_DIR)/$(INSTALL_DIR)
 ##################################################################
 # Build Busybox
 ##################################################################
-$(BUSYBOX_DIR)/$(INSTALL_DIR): | $(BUSYBOX_DIR)
+$(BUSYBOX_DIR)/$(INSTALL_DIR): $(BUSYBOX_DIR)
 	cd $(BUSYBOX_DIR) && \
 	make ARCH=$(BUSYBOX_ARCH) menuconfig && \
 	make ARCH=$(BUSYBOX_ARCH) -j$(BUILD_JOBS) && \
@@ -67,7 +67,7 @@ $(CONFIG_DIR)/$(BUSYBOX_ARCHIVE):
 ##################################################################
 clean:
 	@rm -rf $(INITRAMFS_CPIO) $(BUILD_DIR) *~
-	make -C $(BUSYBOX_DIR) clean || true
+	@(cd $(BUSYBOX_DIR) && make clean) || true
 
 allclean: clean
 

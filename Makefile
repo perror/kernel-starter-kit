@@ -41,8 +41,8 @@ export BUSYBOX_URL=https://busybox.net/downloads/$(BUSYBOX_ARCHIVE)
 ##################################################################
 all:
 	make kernel-build
-	make -C $(MODULES_DIR)
-	make -C $(INITRAMFS_DIR)
+	@cd $(MODULES_DIR) && make
+	@cd $(INITRAMFS_DIR) && make
 	make install
 
 	@echo ""
@@ -112,8 +112,8 @@ $(VM_DIR)/$(LINUX_IMG) $(VM_DIR)/$(LINUX_SYSTEM_MAP) $(VM_DIR)/$(INITRAMFS_CPIO)
 # Clean rules
 ##################################################################
 clean:
-	make -C $(MODULES_DIR) clean
-	make -C $(INITRAMFS_DIR) clean
+	@cd $(MODULES_DIR) && make clean
+	@cd $(INITRAMFS_DIR) && make clean
 	@rm -f $(LINUX_DIR)/arch/$(LINUX_ARCH)/boot/$(LINUX_IMG)
 	@rm -f $(VM_DIR)/$(LINUX_IMG) \
 	       $(VM_DIR)/$(LINUX_SYSTEM_MAP) \
@@ -121,18 +121,18 @@ clean:
 	@rm -f *~
 
 kernel-clean:
-	make -C $(LINUX_DIR) clean
+	@cd $(LINUX_DIR) && make clean
 
 initramfs-clean:
-	make -C $(INITRAMFS_DIR) allclean
+	@cd $(INITRAMFS_DIR) && make clean
 
 allclean: clean kernel-clean initramfs-clean
 	@rm -f $(VM_DIR)/$(LINUX_IMG) $(VM_DIR)/$(LINUX_SYSTEM_MAP)
 	@rm -f $(VM_DIR)/$(INITRAMFS_CPIO)
 
 distclean: clean
-	make -C $(MODULES_DIR) distclean
-	make -C $(INITRAMFS_DIR) distclean
+	@cd $(MODULES_DIR) && make distclean
+	@cd $(INITRAMFS_DIR) && make distclean
 
 	@rm -rf $(LINUX_DIR)
 	@rm -f $(CONFIG_DIR)/$(LINUX_ARCHIVE)
