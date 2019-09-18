@@ -1,5 +1,4 @@
 #include <linux/module.h>
-#include <linux/kernel.h>
 
 /* Initialisation function */
 int init_module(void)
