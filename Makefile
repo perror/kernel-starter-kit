@@ -81,7 +81,7 @@ $(LINUX_DIR)/$(LINUX_SYSTEM_MAP): | $(LINUX_DIR)
 
 $(LINUX_DIR): $(CONFIG_DIR)/$(LINUX_ARCHIVE) $(CONFIG_DIR)/linux-config
 	mkdir -p $(LINUX_DIR)
-	tar --strip 1 -xvf $< -C $(LINUX_DIR)
+	tar --strip 1 -xf $< -C $(LINUX_DIR)
 	cp -f $(CONFIG_DIR)/linux-config $(LINUX_DIR)/.config
 
 $(CONFIG_DIR)/$(LINUX_ARCHIVE):
